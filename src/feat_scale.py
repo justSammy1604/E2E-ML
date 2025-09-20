@@ -8,7 +8,7 @@ data = pl.read_csv("data/diabetes_complete_clean.csv")
 X = data.drop("diabetes_binary")
 y = data["diabetes_binary"]
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42) 
 
 scale = RobustScaler()
 
