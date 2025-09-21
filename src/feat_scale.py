@@ -2,7 +2,7 @@ from sklearn.preprocessing import StandardScaler, MinMaxScaler, RobustScaler
 from sklearn.model_selection import train_test_split
 from imblearn.over_sampling import SMOTE, ADASYN
 import pandas as pd
-import polars as pl
+import polars as pl 
 
 data = pl.read_csv("data/diabetes_complete_clean.csv")
 X = data.drop("diabetes_binary")
