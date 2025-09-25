@@ -12,7 +12,7 @@ def objective(trial):
     class_weight = trial.suggest_categorical("class_weight", [None, "balanced"])
     max_features = trial.suggest_categorical("max_features", ["sqrt", "log2", None])
     max_leaf_nodes = trial.suggest_categorical("max_leaf_nodes", [None, 10, 20, 30, 40, 50])
-    min_impurity_decrease = trial.suggest_float("min_impurity_decrease", 0.0, 0.1)
+    min_impurity_decrease = trial.suggest_float("min_impurity_decrease", 0.0, 0.1) 
     max_samples = trial.suggest_categorical("max_samples", [None, 0.5, 0.75, 1.0])
     model = RandomForestClassifier(n_estimators=n_estimators, max_depth=max_depth,
                                    min_samples_split=min_samples_split,
