@@ -10,7 +10,7 @@ y = data["diabetes_binary"]
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42) 
 
-scale = RobustScaler()
+scale = RobustScaler() 
 
 X_train_scaled = scale.fit_transform(X_train)
 X_test_scaled = scale.transform(X_test)
