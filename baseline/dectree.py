@@ -2,7 +2,7 @@ from sklearn.model_selection import cross_val_score, StratifiedKFold
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, roc_auc_score
 from src.feat_scale import X_train_scaled, X_test_scaled, y_train, y_test, X 
-import polars as pl
+import polars as pl 
 pl.Config.set_tbl_rows(100)
 
 cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
