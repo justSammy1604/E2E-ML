@@ -22,7 +22,7 @@ print(f"ROC AUC: {roc_auc}")
 print(f"Cross-validated scores: {scores}")
 print(f"Classification Report:\n{classification_report(y_test, y_pred)}")
 print(f"Confusion Matrix:\n{confusion_matrix(y_test, y_pred)}")
-print(f"Feature Importances:\n{sorted_feature_importances}")
+print(f"Feature Importances:\n{sorted_feature_importances}") 
 
 """ Accuracy: 0.7781239786469114
 ROC AUC: 0.5958540172344232
