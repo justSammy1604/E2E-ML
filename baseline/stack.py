@@ -1,6 +1,6 @@
 from sklearn.ensemble import StackingClassifier
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.linear_model import LogisticRegression
+from sklearn.linear_model import LogisticRegression 
 from sklearn.svm import LinearSVC
 from sklearn.model_selection import StratifiedKFold, cross_val_score
 from sklearn.inspection import permutation_importance
