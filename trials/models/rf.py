@@ -11,8 +11,13 @@ def objective(trial):
     min_samples_leaf = trial.suggest_int("min_samples_leaf", 1, 50)
     class_weight = trial.suggest_categorical("class_weight", [None, "balanced"])
     max_features = trial.suggest_categorical("max_features", ["sqrt", "log2", None])
+<<<<<<< HEAD
     max_leaf_nodes = trial.suggest_categorical("max_leaf_nodes", [None, 10, 20, 30, 40, 50, 60])
     min_impurity_decrease = trial.suggest_float("min_impurity_decrease", 0.0, 0.1)
+=======
+    max_leaf_nodes = trial.suggest_categorical("max_leaf_nodes", [None, 10, 20, 30, 40, 50])
+    min_impurity_decrease = trial.suggest_float("min_impurity_decrease", 0.0, 0.1) 
+>>>>>>> 1fc0d06013c449349f540b781452040802a9df7f
     max_samples = trial.suggest_categorical("max_samples", [None, 0.5, 0.75, 1.0])
     model = RandomForestClassifier(n_estimators=n_estimators, max_depth=max_depth,
                                    min_samples_split=min_samples_split,
@@ -39,3 +44,15 @@ print(f"Accuracy: {accuracy_score(y_test, y_pred)}")
 print(f"ROC AUC: {roc_auc}")
 print(f"Classification Report:\n{classification_report(y_test, y_pred)}")
 print(f"Confusion Matrix:\n{confusion_matrix(y_test, y_pred)}")
+<<<<<<< HEAD
+=======
+
+""" 
+min_impurity_decrease
+min_samples_leaf
+n_estimators
+max_depth
+max_leaf_nodes
+min_samples_split
+"""
+>>>>>>> 1fc0d06013c449349f540b781452040802a9df7f

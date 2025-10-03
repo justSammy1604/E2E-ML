@@ -1,5 +1,5 @@
 from sklearn.svm import LinearSVC
-from sklearn.model_selection import cross_val_score, StratifiedKFold
+from sklearn.model_selection import cross_val_score, StratifiedKFold 
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, roc_auc_score
 import optuna as op
 from src.feat_scale import X_train_scaled, X_test_scaled, y_train, y_test

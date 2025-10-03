@@ -2,7 +2,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import cross_val_score, StratifiedKFold
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, roc_auc_score
 import optuna as op
-from src.feat_scale import X_train_scaled, X_test_scaled, y_train, y_test, X
+from src.feat_scale import X_train_scaled, X_test_scaled, y_train, y_test, X 
 
 params = {
     "n_neighbors": 11,

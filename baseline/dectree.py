@@ -1,8 +1,8 @@
-from sklearn.model_selection import cross_val_score, StratifiedKFold
+from sklearn.model_selection import cross_val_score, StratifiedKFold 
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, roc_auc_score
 from src.feat_scale import X_train_scaled, X_test_scaled, y_train, y_test, X 
-import polars as pl
+import polars as pl 
 pl.Config.set_tbl_rows(100)
 
 cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
@@ -22,7 +22,7 @@ print(f"ROC AUC: {roc_auc}")
 print(f"Cross-validated scores: {scores}")
 print(f"Classification Report:\n{classification_report(y_test, y_pred)}")
 print(f"Confusion Matrix:\n{confusion_matrix(y_test, y_pred)}")
-print(f"Feature Importances:\n{sorted_feature_importances}")
+print(f"Feature Importances:\n{sorted_feature_importances}") 
 
 """ Accuracy: 0.7781239786469114
 ROC AUC: 0.5958540172344232
