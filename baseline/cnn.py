@@ -14,19 +14,23 @@ import numpy as np
 
 from src.feat_scale import X_train_scaled, X_test_scaled, y_train, y_test
 
+# GPU acceleration setup
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print(f"Using device: {device}")
+
 # Reshape for CNN: (samples, channels=1, features)
-X_train_scaled = torch.tensor(X_train_scaled, dtype=torch.float32).unsqueeze(1)
-X_test_scaled = torch.tensor(X_test_scaled, dtype=torch.float32).unsqueeze(1)
-y_train = torch.tensor(y_train.to_numpy(), dtype=torch.float32)
-y_test = torch.tensor(y_test.to_numpy(), dtype=torch.float32)
+X_train_scaled = torch.tensor(X_train_scaled, dtype=torch.float32).unsqueeze(1).to(device)
+X_test_scaled = torch.tensor(X_test_scaled, dtype=torch.float32).unsqueeze(1).to(device)
+y_train = torch.tensor(y_train.to_numpy(), dtype=torch.float32).to(device)
+y_test = torch.tensor(y_test.to_numpy(), dtype=torch.float32).to(device)
 
 train_ds = TensorDataset(X_train_scaled, y_train)
 train_loader = DataLoader(train_ds, batch_size=256, shuffle=True)
 
 class_weights = compute_class_weight(
-    "balanced", classes=np.unique(y_train), y=y_train.numpy()
+    "balanced", classes=np.unique(y_train.cpu()), y=y_train.cpu().numpy()
 )
-weights = torch.tensor(class_weights, dtype=torch.float32)
+weights = torch.tensor(class_weights, dtype=torch.float32).to(device)
 
 
 # CNN Model
@@ -48,14 +52,15 @@ class CNN1D(nn.Module):
         return self.sigmoid(x)
 
 
-model = CNN1D(X_train_scaled.shape[2])
+model = CNN1D(X_train_scaled.shape[2]).to(device)
 criterion = nn.BCELoss(weight=weights[1])
 optimizer = optim.Adam(model.parameters(), lr=1e-3)
 
-EPOCHS = 50
+EPOCHS = 100
 for epoch in range(EPOCHS):
     model.train()
     for xb, yb in train_loader:
+        xb, yb = xb.to(device), yb.to(device)
         optimizer.zero_grad()
         preds = model(xb).squeeze()
         loss = criterion(preds, yb)
@@ -66,13 +71,13 @@ for epoch in range(EPOCHS):
 # Evaluation
 model.eval()
 with torch.no_grad():
-    y_proba = model(X_test_scaled).squeeze().numpy()
+    y_proba = model(X_test_scaled).squeeze().cpu().numpy()
     y_pred = (y_proba >= 0.5).astype(int)
 
-print("Accuracy:", accuracy_score(y_test, y_pred))
-print("ROC-AUC:", roc_auc_score(y_test, y_proba))
-print("Classification Report:\n", classification_report(y_test, y_pred))
-print("Confusion Matrix:\n", confusion_matrix(y_test, y_pred))
+print("Accuracy:", accuracy_score(y_test.cpu(), y_pred))
+print("ROC-AUC:", roc_auc_score(y_test.cpu(), y_proba))
+print("Classification Report:\n", classification_report(y_test.cpu(), y_pred))
+print("Confusion Matrix:\n", confusion_matrix(y_test.cpu(), y_pred))
 
 """  
 Accuracy: 0.8544721647238261

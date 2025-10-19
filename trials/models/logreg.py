@@ -16,7 +16,7 @@ def objective(trial):
 
 
 study = op.create_study(study_name='logreg', direction='maximize', storage='sqlite:///example.db')
-study.optimize(objective, n_trials=100)
+study.optimize(objective, n_trials=150)
 params = study.best_params
 model = LogisticRegression(**params)
 model.fit(X_train_scaled, y_train)

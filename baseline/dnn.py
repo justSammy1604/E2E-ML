@@ -67,7 +67,7 @@ criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weight)
 optimizer = optim.Adam(model.parameters(), lr=1e-4)  # smaller LR
 
 
-epochs = 80
+epochs = 100
 best_val_loss = float("inf")
 patience, patience_counter = 5, 0
 

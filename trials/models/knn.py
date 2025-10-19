@@ -4,12 +4,22 @@ from sklearn.metrics import accuracy_score, classification_report, confusion_mat
 import optuna as op
 from src.feat_scale import X_train_scaled, X_test_scaled, y_train, y_test, X 
 
-params = {
-    "n_neighbors": 11,
-    "weights": "distance",
-    "metric": "manhattan",
-    "algorithm": "ball_tree",
-}
+def objective(trial):
+    n_neighbors = trial.suggest_int("n_neighbors", 1, 50)
+    weights = trial.suggest_categorical("weights", ["uniform", "distance"])
+    algorithm = trial.suggest_categorical("algorithm", ["auto", "ball_tree", "kd_tree", "brute"])
+    leaf_size = trial.suggest_int("leaf_size", 10, 100)
+    p = trial.suggest_int("p", 1, 2)
+    model = KNeighborsClassifier(n_neighbors=n_neighbors, weights=weights,
+                                 algorithm=algorithm, leaf_size=leaf_size, p=p)
+    cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+    scores = cross_val_score(model, X_train_scaled, y_train, cv=cv, scoring='accuracy')
+    return scores.mean()
+
+
+study = op.create_study(study_name='knn', direction='maximize', storage='sqlite:///example.db')
+study.optimize(objective, n_trials=150)
+params = study.best_params
 model = KNeighborsClassifier(**params)
 model.fit(X_train_scaled, y_train)
 y_pred = model.predict(X_test_scaled)

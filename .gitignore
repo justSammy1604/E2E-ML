@@ -8,3 +8,5 @@ wheels/
 *__pycache__
 # Virtual environments
 .venv
+sample.db
+example.db

@@ -12,7 +12,7 @@ def objective(trial):
     return scores.mean()
 
 study = op.create_study(study_name='gauss', direction='maximize', storage='sqlite:///example.db')
-study.optimize(objective, n_trials=100)
+study.optimize(objective, n_trials=150)
 params = study.best_params
 model = GaussianNB(**params)
 model.fit(X_train_scaled, y_train)
