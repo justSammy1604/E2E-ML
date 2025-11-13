@@ -516,7 +516,7 @@ all_algorithms["GWO_Chi2"] = gwo_chi2
 all_algorithms["WOA_Chi2"] = woa_chi2
 all_algorithms["FA_Chi2"] = fa_chi2
 
-# Run Relief-F1 Interaction
+""" # Run Relief-F1 Interaction
 print("\n=== Better Relief-Approx F1 Interaction Hybrid for Diabetes FS ===")
 gwo_relief, gwo_relief_perc = run_and_print(
     GWO,
@@ -547,7 +547,7 @@ fa_relief, fa_relief_perc = run_and_print(
 )
 all_algorithms["GWO_Relief"] = gwo_relief
 all_algorithms["WOA_Relief"] = woa_relief
-all_algorithms["FA_Relief"] = fa_relief
+all_algorithms["FA_Relief"] = fa_relief """
 
 # Now, evaluate the ML models on the selected features
 xgb_params = {

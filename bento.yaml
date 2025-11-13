@@ -1,0 +1,15 @@
+name: diabetes_ensemble_service
+version: "0.1.0"
+service: "service:svc" 
+labels:
+  owner: samuelmesquita1604
+  stage: dev
+include:
+  - "service.py"
+python:
+  packages:
+    - pandas
+    - scikit-learn
+    - lightgbm
+    - xgboost
+    - catboost

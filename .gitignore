@@ -1,4 +1,5 @@
 # Python-generated files
+*__init__.py
 __pycache__/
 *.py[oc]
 build/
@@ -8,5 +9,12 @@ wheels/
 *__pycache__
 # Virtual environments
 .venv
-sample.db
+.dvc/config
+mlruns/
+.env
+.vscode/
+catboost_info/
 example.db
+*.pkl
+*.cb
+*.xgb
