@@ -1,4 +1,5 @@
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, roc_auc_score
+from src.metrics import print_core_metrics
 from sklearn.model_selection import cross_val_score, StratifiedKFold
 from sklearn.tree import DecisionTreeClassifier
 from src.feat_scale import X_train_scaled, X_test_scaled, y_train, y_test, X
@@ -41,10 +42,9 @@ model.fit(X_train_scaled, y_train)
 y_pred = model.predict(X_test_scaled)
 probs = model.predict_proba(X_test_scaled)[:,1]
 roc_auc = roc_auc_score(y_test, probs)
-print(f"Accuracy: {accuracy_score(y_test, y_pred)}")
+print_core_metrics(y_test, y_pred)
 print(f"ROC AUC: {roc_auc}")
 print(f"Classification Report:\n{classification_report(y_test, y_pred)}")
-print(f"Confusion Matrix:\n{confusion_matrix(y_test, y_pred)}")
 
 """ class DecisionTreeClassifier(
     criterion: Literal['gini', 'entropy', 'log_loss'] = "gini",

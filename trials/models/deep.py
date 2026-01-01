@@ -13,6 +13,7 @@ from sklearn.metrics import (
 )
 from sklearn.model_selection import StratifiedKFold
 from src.feat_scale import X_train_scaled, X_test_scaled, y_train, y_test, X
+from src.metrics import print_core_metrics
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -121,10 +122,10 @@ def train_and_eval(hparams: dict):
         y_pred_probs = torch.sigmoid(y_pred_logits).cpu().numpy()
         y_pred = (y_pred_probs >= 0.5).astype(int)
 
-    # Print classification report and confusion matrix for test set
-    print("\n=== Test set classification report ===")
-    print(classification_report(y_test_np, y_pred))
-    print("Confusion Matrix:\n", confusion_matrix(y_test_np, y_pred))
+    # Print core metrics and detailed report for test set
+    print("\n=== Test set metrics ===")
+    print_core_metrics(y_test_np, y_pred)
+    print("Classification Report:\n", classification_report(y_test_np, y_pred))
 
     # 5-fold cross-validation on training set
     print("\n=== 5-fold cross-validation on training set ===")

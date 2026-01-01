@@ -10,6 +10,7 @@ from sklearn.inspection import permutation_importance
 from imblearn.over_sampling import SMOTE
 import polars as pl
 import pandas as pd
+from src.metrics import print_core_metrics
 
 pl.Config.set_tbl_rows(100)
 
@@ -48,11 +49,10 @@ perm_imp = pl.DataFrame(
     {"Feature": X.columns, "Importance": results.importances_mean}
 ).sort("Importance")
 
-print(f"Accuracy: {accuracy_score(y_test, y_pred)}")
+print_core_metrics(y_test, y_pred)
 print(f"Cross-validated scores: {scores}")
 print(f"ROC AUC: {roc_auc}")
 print(f"Classification Report:\n{classification_report(y_test, y_pred)}")
-print(f"Confusion Matrix:\n{confusion_matrix(y_test, y_pred)}")
 print(f"Feature Importances:\n{perm_imp}")
 
 """  

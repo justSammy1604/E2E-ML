@@ -16,6 +16,7 @@ from src.feat_scale import X_train_scaled, X_test_scaled, y_train, y_test
 import optuna as op
 import numpy as np
 from sklearn.model_selection import StratifiedKFold
+from src.metrics import print_core_metrics
 
 # Convert labels to numpy
 y_train_np = y_train.to_numpy() if hasattr(y_train, 'to_numpy') else np.asarray(y_train)
@@ -86,10 +87,10 @@ def train_and_eval(hparams: dict):
         y_proba = model(X_test).squeeze().cpu().numpy()
         y_pred = (y_proba >= 0.5).astype(int)
 
-    # Print classification report and confusion matrix
-    print("\n=== Test set classification report ===")
-    print(classification_report(y_test_np, y_pred))
-    print("Confusion Matrix:\n", confusion_matrix(y_test_np, y_pred))
+    # Print core metrics and detailed report
+    print("\n=== Test set metrics ===")
+    print_core_metrics(y_test_np, y_pred)
+    print("Classification Report:\n", classification_report(y_test_np, y_pred))
 
     # 5-fold cross-validation on training set
     print("\n=== 5-fold cross-validation on training set ===")

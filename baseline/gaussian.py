@@ -1,6 +1,7 @@
 from sklearn.naive_bayes import GaussianNB
 from sklearn.model_selection import cross_val_score, StratifiedKFold
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, roc_auc_score
+from src.metrics import print_core_metrics
 from src.feat_scale import X_train_scaled, X_test_scaled, y_train, y_test, X
 from sklearn.inspection import permutation_importance
 import polars as pl
@@ -19,10 +20,9 @@ for i in results.importances_mean.argsort()[::-1]:
     print(f"Feature {X.columns[i]}: {results.importances_mean[i]:.3f} ± {results.importances_std[i]:.3f}")
 
 roc_auc = roc_auc_score(y_test, model.predict_proba(X_test_scaled)[:, 1])
-print(f"Accuracy: {accuracy_score(y_test, y_pred)}")
+print_core_metrics(y_test, y_pred)
 print(f"ROC AUC: {roc_auc}")
 print(f"Classification Report:\n{classification_report(y_test, y_pred)}")
-print(f"Confusion Matrix:\n{confusion_matrix(y_test, y_pred)}")
 print(f"Cross-Validation Scores:\n{scores}")
 
 """Feature stroke: 0.013 ± 0.001

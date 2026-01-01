@@ -11,8 +11,8 @@ from sklearn.metrics import (
     accuracy_score,
     balanced_accuracy_score,
     precision_recall_curve,
-    classification_report,
     roc_curve,
+    confusion_matrix,
 )
 import pandas as pd
 import random
@@ -20,6 +20,7 @@ import math
 import copy
 import sys
 import warnings
+from src.metrics import compute_metrics
 
 warnings.filterwarnings("ignore")
 
@@ -440,7 +441,7 @@ def relief_interaction_f1_fitness(
     )
     avg_f1 = float(np.nanmean(scores)) if np.any(np.isfinite(scores)) else 0.0
     max_relief = float(np.max(np.abs(relief_weights)) + EPS)
-    normalized_relief = (avg_relief / max_relief) if max_relief > 0 else 0.0
+    normalized_relief = (avg_f1 / max_relief) if max_relief > 0 else 0.0
     val = w_f1 * (1 - avg_f1) + w_relief * (1 - normalized_relief)
     return float(val) if np.isfinite(val) else 1e9
 
@@ -483,73 +484,7 @@ def run_and_print(
 # Dictionary to hold all selected features from both methods
 all_algorithms = {}
 
-# Run Chi2-AUC-Sparsity
-print("\n=== Faster Chi2-AUC-Sparsity Hybrid for Diabetes FS ===")
-gwo_chi2, gwo_chi2_perc = run_and_print(
-    GWO,
-    "GWO-Chi2 AUC Sparsity",
-    chi2_auc_sparsity_fitness,
-    feature_names,
-    dim,
-    X_train,
-    y_train,
-)
-woa_chi2, woa_chi2_perc = run_and_print(
-    WOA,
-    "WOA-Chi2 AUC Sparsity",
-    chi2_auc_sparsity_fitness,
-    feature_names,
-    dim,
-    X_train,
-    y_train,
-)
-fa_chi2, fa_chi2_perc = run_and_print(
-    FA,
-    "FA-Chi2 AUC Sparsity",
-    chi2_auc_sparsity_fitness,
-    feature_names,
-    dim,
-    X_train,
-    y_train,
-)
-all_algorithms["GWO_Chi2"] = gwo_chi2
-all_algorithms["WOA_Chi2"] = woa_chi2
-all_algorithms["FA_Chi2"] = fa_chi2
-
-""" # Run Relief-F1 Interaction
-print("\n=== Better Relief-Approx F1 Interaction Hybrid for Diabetes FS ===")
-gwo_relief, gwo_relief_perc = run_and_print(
-    GWO,
-    "GWO-Relief F1 Interaction",
-    relief_interaction_f1_fitness,
-    feature_names,
-    dim,
-    X_train,
-    y_train,
-)
-woa_relief, woa_relief_perc = run_and_print(
-    WOA,
-    "WOA-Relief F1 Interaction",
-    relief_interaction_f1_fitness,
-    feature_names,
-    dim,
-    X_train,
-    y_train,
-)
-fa_relief, fa_relief_perc = run_and_print(
-    FA,
-    "FA-Relief F1 Interaction",
-    relief_interaction_f1_fitness,
-    feature_names,
-    dim,
-    X_train,
-    y_train,
-)
-all_algorithms["GWO_Relief"] = gwo_relief
-all_algorithms["WOA_Relief"] = woa_relief
-all_algorithms["FA_Relief"] = fa_relief """
-
-# Now, evaluate the ML models on the selected features
+# --- 1. Define Models and Evaluation Helper ---
 xgb_params = {
     "colsample_bytree": 0.5626355618320708,
     "gamma": 0.1016972117972675,
@@ -617,44 +552,122 @@ models = {
     ),  # CPU-only
 }
 
-results = {}
-
-for algo_name, selected in all_algorithms.items():
-    idx = np.where(selected == 1)[0]
-    X_train_sel = X_train.iloc[:, idx]
-    X_test_sel = X_test.iloc[:, idx]
-    print(f"\n--- Performance for {algo_name} selected features ---")
+def evaluate_models(X_tr, X_te, y_tr, y_te, name_suffix=""):
+    res = {}
+    print(f"\n--- Performance for {name_suffix} ---")
     for model_name, model in models.items():
-        model.fit(X_train_sel, y_train)
-        y_pred = model.predict(X_test_sel)
+        model.fit(X_tr, y_tr)
+        y_pred = model.predict(X_te)
         y_proba = (
-            model.predict_proba(X_test_sel)[:, 1]
+            model.predict_proba(X_te)[:, 1]
             if hasattr(model, "predict_proba")
             else None
         )
-        f1 = f1_score(y_test, y_pred)
-        auc = roc_auc_score(y_test, y_proba) if y_proba is not None else np.nan
-        accuracy = accuracy_score(y_test, y_pred)
-        balanced_acc = balanced_accuracy_score(y_test, y_pred)
-        # Compute curves (for potential use, e.g., plotting)
-        if y_proba is not None:
-            precision, recall, pr_thresholds = precision_recall_curve(y_test, y_proba)
-            fpr, tpr, roc_thresholds = roc_curve(y_test, y_proba)
-        else:
-            precision, recall, pr_thresholds = None, None, None
-            fpr, tpr, roc_thresholds = None, None, None
-        results[(algo_name, model_name)] = {
-            "F1": f1,
-            "AUC": auc,
-            "Accuracy": accuracy,
-            "Balanced Acc": balanced_acc,
-        }
-        print(
-            f"{model_name}: F1 = {f1:.4f}, AUC = {auc:.4f}, Acc = {accuracy:.4f}, Bal Acc = {balanced_acc:.4f}"
-        )
-        print(classification_report(y_test, y_pred))
+        
+        metrics = compute_metrics(y_te, y_pred, y_proba)
+        res[model_name] = metrics
+        
+        print(f"{model_name}: "
+              f"Acc = {metrics['Accuracy']:.4f}, "
+              f"Sensitivity = {metrics['Sensitivity']:.4f}, "
+              f"Specificity = {metrics['Specificity']:.4f}, "
+              f"F1 = {metrics['F1 Score']:.4f}, "
+              f"AUC = {metrics['AUC']:.4f}")
+    return res
 
-# Display results in a table
-results_df = pd.DataFrame(results).T
-print("\n--- Summary Table ---")
+# --- 2. Baseline Evaluation (Before Selection) ---
+print("\n=== BASELINE: BEFORE FEATURE SELECTION (All Features) ===")
+baseline_results = evaluate_models(X_train, X_test, y_train, y_test, "ALL Features")
+
+# --- 3. Run Feature Selection Algorithms ---
+print("\n=== Faster Chi2-AUC-Sparsity Hybrid for Diabetes FS ===")
+gwo_chi2, gwo_chi2_perc = run_and_print(
+    GWO,
+    "GWO-Chi2 AUC Sparsity",
+    chi2_auc_sparsity_fitness,
+    feature_names,
+    dim,
+    X_train,
+    y_train,
+)
+woa_chi2, woa_chi2_perc = run_and_print(
+    WOA,
+    "WOA-Chi2 AUC Sparsity",
+    chi2_auc_sparsity_fitness,
+    feature_names,
+    dim,
+    X_train,
+    y_train,
+)
+fa_chi2, fa_chi2_perc = run_and_print(
+    FA,
+    "FA-Chi2 AUC Sparsity",
+    chi2_auc_sparsity_fitness,
+    feature_names,
+    dim,
+    X_train,
+    y_train,
+)
+all_algorithms["GWO_Chi2"] = gwo_chi2
+all_algorithms["WOA_Chi2"] = woa_chi2
+all_algorithms["FA_Chi2"] = fa_chi2
+
+""" # Run Relief-F1 Interaction
+print("\n=== Better Relief-Approx F1 Interaction Hybrid for Diabetes FS ===")
+gwo_relief, gwo_relief_perc = run_and_print(
+    GWO,
+    "GWO-Relief F1 Interaction",
+    relief_interaction_f1_fitness,
+    feature_names,
+    dim,
+    X_train,
+    y_train,
+)
+woa_relief, woa_relief_perc = run_and_print(
+    WOA,
+    "WOA-Relief F1 Interaction",
+    relief_interaction_f1_fitness,
+    feature_names,
+    dim,
+    X_train,
+    y_train,
+)
+fa_relief, fa_relief_perc = run_and_print(
+    FA,
+    "FA-Relief F1 Interaction",
+    relief_interaction_f1_fitness,
+    feature_names,
+    dim,
+    X_train,
+    y_train,
+)
+all_algorithms["GWO_Relief"] = gwo_relief
+all_algorithms["WOA_Relief"] = woa_relief
+all_algorithms["FA_Relief"] = fa_relief """
+
+# --- 4. Evaluate Selected Features (After Selection) ---
+final_results = {}
+
+# Add baseline to final results for table
+for m_name, m_res in baseline_results.items():
+    final_results[("ALL_Features", m_name)] = m_res
+
+for algo_name, selected in all_algorithms.items():
+    idx = np.where(selected == 1)[0]
+    if len(idx) == 0:
+        print(f"Warning: {algo_name} selected 0 features. Skipping.")
+        continue
+        
+    X_train_sel = X_train.iloc[:, idx]
+    X_test_sel = X_test.iloc[:, idx]
+    
+    print(f"\n=== AFTER FEATURE SELECTION: {algo_name} ===")
+    algo_res = evaluate_models(X_train_sel, X_test_sel, y_train, y_test, f"{algo_name} selected features")
+    
+    for m_name, m_res in algo_res.items():
+        final_results[(algo_name, m_name)] = m_res
+
+# --- 5. Summary Table ---
+results_df = pd.DataFrame(final_results).T
+print("\n--- Comparative Summary Table ---")
 print(results_df.round(4))

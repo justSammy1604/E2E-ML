@@ -1,6 +1,7 @@
 from sklearn.ensemble import VotingClassifier
 from sklearn.model_selection import StratifiedKFold, cross_val_score
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, roc_auc_score
+from src.metrics import print_core_metrics
 import numpy as np
 import warnings
 from src.feat_scale import X_train_scaled, X_test_scaled, y_train, y_test
@@ -41,8 +42,7 @@ model.fit(X_train_scaled, y_train_array)
 y_pred = model.predict(X_test_scaled)
 probs = model.predict_proba(X_test_scaled)[:,1]
 roc_auc = roc_auc_score(y_test_array, probs)
-print(f"Accuracy: {accuracy_score(y_test_array, y_pred)}")
+print_core_metrics(y_test_array, y_pred)
 print(f"ROC AUC: {roc_auc}")
 print(f"Classification Report:\n{classification_report(y_test_array, y_pred)}")
-print(f"Confusion Matrix:\n{confusion_matrix(y_test_array, y_pred)}")
 

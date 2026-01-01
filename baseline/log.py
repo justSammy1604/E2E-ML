@@ -1,6 +1,7 @@
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import cross_val_score, StratifiedKFold
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, roc_auc_score
+from src.metrics import print_core_metrics
 from src.feat_scale import X_train_scaled, X_test_scaled, y_train, y_test, X
 import polars as pl
 pl.Config.set_tbl_rows(100)
@@ -17,12 +18,12 @@ feature_importance = pl.DataFrame({"Feature": X.columns, "Importance": importanc
 sorted_feature_importance = feature_importance.sort("Importance")
 roc_auc = roc_auc_score(y_test, model.predict_proba(X_test_scaled)[:, 1])
 
-print("Accuracy:", accuracy_score(y_test, y_pred))
+# Core metrics: accuracy, sensitivity, specificity, and confusion matrix
+print_core_metrics(y_test, y_pred)
 print("Cross-Validation Scores:\n", scores)
 print(f"ROC AUC: {roc_auc}")
 print("Feature Importance:\n", sorted_feature_importance)
 print("Classification Report:\n", classification_report(y_test, y_pred))
-print("Confusion Matrix:\n", confusion_matrix(y_test, y_pred))
 
 """ Accuracy: 0.8523150670007626
 Cross-Validation Scores:

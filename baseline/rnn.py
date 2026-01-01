@@ -11,6 +11,7 @@ from sklearn.metrics import (
 )
 from sklearn.utils.class_weight import compute_class_weight
 import numpy as np
+from src.metrics import print_core_metrics
 
 from src.feat_scale import X_train_scaled, X_test_scaled, y_train, y_test
 
@@ -69,10 +70,9 @@ with torch.no_grad():
     y_proba = model(X_test).squeeze().cpu().numpy()
     y_pred = (y_proba >= 0.5).astype(int)
 
-print("Accuracy:", accuracy_score(y_test.cpu(), y_pred))
+print_core_metrics(y_test.cpu(), y_pred)
 print("ROC-AUC:", roc_auc_score(y_test.cpu(), y_proba))
 print("Classification Report:\n", classification_report(y_test.cpu(), y_pred))
-print("Confusion Matrix:\n", confusion_matrix(y_test.cpu(), y_pred))
 """  
 Accuracy: 0.8534045102952391
 ROC-AUC: 0.8149930458054522

@@ -1,0 +1,26 @@
+service: "service.py:DiabetesEnsembleService"
+name: "diabetes_ensemble"
+description: "Serializable ensemble diabetes service with runner wrappers"
+labels:
+  owner: "samuelmesquita1604"
+  stage: "dev"
+include:
+  - "service.py"
+python:
+  lock_packages: false
+  packages:
+    - "bentoml==1.2.5"  # Pins for runner_service support
+    - "pandas==2.1.4"
+    - "numpy==1.26.2"
+    - "scikit-learn==1.3.2"
+    - "joblib==1.3.2"
+    - "xgboost==2.0.3"
+    - "lightgbm==4.3.0"
+    - "catboost==1.2.5"
+    - "pydantic==2.5.0"
+docker:
+  python_version: "3.11"
+  system_packages:
+    - "libblas-dev"
+    - "liblapack-dev"
+  distro: "debian"  # Lean; swap to "ubuntu:22.04" if lib conflicts

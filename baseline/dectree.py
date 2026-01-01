@@ -1,6 +1,7 @@
 from sklearn.model_selection import cross_val_score, StratifiedKFold 
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, roc_auc_score
+from src.metrics import print_core_metrics
 from src.feat_scale import X_train_scaled, X_test_scaled, y_train, y_test, X 
 import polars as pl 
 pl.Config.set_tbl_rows(100)
@@ -17,11 +18,10 @@ importances = model.feature_importances_
 feature_importances = pl.DataFrame({"feature": X.columns, "importance": importances})
 sorted_feature_importances = feature_importances.sort("importance")
 
-print(f"Accuracy: {accuracy_score(y_test, y_pred)}")
+print_core_metrics(y_test, y_pred)
 print(f"ROC AUC: {roc_auc}")
 print(f"Cross-validated scores: {scores}")
 print(f"Classification Report:\n{classification_report(y_test, y_pred)}")
-print(f"Confusion Matrix:\n{confusion_matrix(y_test, y_pred)}")
 print(f"Feature Importances:\n{sorted_feature_importances}") 
 
 """ Accuracy: 0.7781239786469114

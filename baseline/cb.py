@@ -9,6 +9,7 @@ from sklearn.model_selection import cross_val_score, StratifiedKFold
 from sklearn.inspection import permutation_importance
 from imblearn.over_sampling import SMOTE
 from src.feat_scale import X_train_scaled, X_test_scaled, y_train, y_test, X
+from src.metrics import print_core_metrics
 import polars as pl
 import numpy as np
 
@@ -51,11 +52,10 @@ perm_imp = pl.DataFrame(
     {"Feature": X.columns, "Importance": results.importances_mean}
 ).sort("Importance")
 
-print(f"Accuracy: {accuracy_score(y_test_np, y_pred)}")
+print_core_metrics(y_test_np, y_pred)
 print(f"Cross-validated scores: {scores}")
 print(f"ROC AUC: {roc_auc}")
 print(f"Classification Report:\n{classification_report(y_test_np, y_pred)}")
-print(f"Confusion Matrix:\n{confusion_matrix(y_test_np, y_pred)}")
 print(f"Feature Importances:\n{perm_imp}")
 
 """  

@@ -11,6 +11,7 @@ from sklearn.metrics import (
 from sklearn.utils.class_weight import compute_class_weight
 from sklearn.model_selection import StratifiedKFold
 import numpy as np
+from src.metrics import print_core_metrics
 
 from src.feat_scale import X_train_scaled, X_test_scaled, y_train, y_test
 import optuna as op
@@ -115,10 +116,10 @@ def train_and_eval(hparams: dict):
         y_proba = model(X_test_t).squeeze().cpu().numpy()
         y_pred = (y_proba >= 0.5).astype(int)
 
-    # Print detailed metrics for test set
-    print("\n=== Test set classification report ===")
-    print(classification_report(y_test_np, y_pred))
-    print("Confusion Matrix:\n", confusion_matrix(y_test_np, y_pred))
+    # Print core metrics + detailed report for test set
+    print("\n=== Test set metrics ===")
+    print_core_metrics(y_test_np, y_pred)
+    print("Classification Report:\n", classification_report(y_test_np, y_pred))
 
     # Cross-validation on training set (Stratified 5-fold)
     print("\n=== 5-fold cross-validation on training set ===")

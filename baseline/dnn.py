@@ -10,6 +10,7 @@ from sklearn.metrics import (
     roc_auc_score,
     classification_report,
 )
+from src.metrics import print_core_metrics
 from src.feat_scale import X_train_scaled, X_test_scaled, y_train, y_test, X
 
 
@@ -121,7 +122,6 @@ with torch.no_grad():
 y_test_np = y_test.cpu().numpy()
 
 roc_auc = roc_auc_score(y_test_np, y_pred_probs)
-print(f"Accuracy: {accuracy_score(y_test_np, y_pred)}")
+print_core_metrics(y_test_np, y_pred)
 print(f"ROC AUC: {roc_auc}")
 print(f"Classification Report:\n{classification_report(y_test_np, y_pred)}")
-print(f"Confusion Matrix:\n{confusion_matrix(y_test_np, y_pred)}")

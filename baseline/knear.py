@@ -2,6 +2,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.inspection import permutation_importance
 from sklearn.model_selection import cross_val_score, StratifiedKFold
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+from src.metrics import print_core_metrics
 from src.feat_scale import X_train_scaled, X_test_scaled, y_train, y_test, X
 import polars as pl
 pl.Config.set_tbl_rows(100)
@@ -19,9 +20,8 @@ result = permutation_importance(model, X_test_scaled, y_test, n_repeats=30, rand
 for i in result.importances_mean.argsort()[::-1]:
     print(f"Feature: {X.columns[i]}, Importance: {result.importances_mean[i]}")
 
-print(f"Accuracy: {accuracy_score(y_test, y_pred)}")
+print_core_metrics(y_test, y_pred)
 print(f"Classification Report:\n{classification_report(y_test, y_pred)}")
-print(f"Confusion Matrix:\n{confusion_matrix(y_test, y_pred)}")
 print(f"Cross-Validation Scores:\n{scores}")
 
 """ Accuracy: 0.8338381087264408

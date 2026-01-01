@@ -5,6 +5,7 @@ from sklearn.svm import LinearSVC
 from sklearn.model_selection import StratifiedKFold, cross_val_score
 from sklearn.inspection import permutation_importance
 from sklearn.metrics import accuracy_score, confusion_matrix, roc_auc_score, classification_report
+from src.metrics import print_core_metrics
 from src.feat_scale import X_train_scaled, X_test_scaled, y_train, y_test, X
 import polars as pl
 pl.Config.set_tbl_rows(100)
@@ -22,11 +23,10 @@ y_pred = model.predict(X_test_scaled)
 results = permutation_importance(model, X_test_scaled, y_test, n_repeats=30, random_state=42, n_jobs=-1)
 perm_imp = pl.DataFrame({"Feature": X.columns, "Importance": results.importances_mean}).sort("Importance")
 
-print(f"Accuracy: {accuracy_score(y_test, y_pred)}")
+print_core_metrics(y_test, y_pred)
 print(f"Cross-validated scores: {scores}")
 print(f"ROC AUC: {roc_auc}")
 print(f"Classification Report:\n{classification_report(y_test, y_pred)}")
-print(f"Confusion Matrix:\n{confusion_matrix(y_test, y_pred)}")
 print(f"Feature Importances:\n{perm_imp}")
 
 """ 
