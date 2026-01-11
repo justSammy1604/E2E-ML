@@ -10,7 +10,7 @@ with bentoml.importing():
     from typing import List
     import xgboost as xgb
     import lightgbm as lgbm
-    from catboost import CatBoostClassifier
+    from catboost import CatBoostClassifier 
 
 # --- Model Services (New Style: No Runners) ---
 @bentoml.service(resources={"cpu": "1"})  # Minimal resources per model
