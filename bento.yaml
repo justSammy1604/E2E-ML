@@ -5,7 +5,7 @@ labels:
   owner: samuelmesquita1604
   stage: dev
 include:
-  - "service.py"
+  - "service.py" 
 python:
   packages:
     - pandas
