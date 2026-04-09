@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  diabetes-ensemble-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: diabetes-ensemble-service
+    ports:
+      - "3000:3000"
+    environment:
+      - BENTOML_HOME=/app/.bentoml
+      - PYTHONUNBUFFERED=1
+      - PYTHONDONTWRITEBYTECODE=1
+    volumes:
+      - ./service.py:/app/service.py:ro
+      - bentoml_cache:/app/.bentoml
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+    networks:
+      - ml_network
+
+volumes:
+  bentoml_cache:
+
+networks:
+  ml_network:
+    driver: bridge

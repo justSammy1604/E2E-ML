@@ -18,3 +18,5 @@ example.db
 *.pkl
 *.cb
 *.xgb
+*.env
+*.env.example
