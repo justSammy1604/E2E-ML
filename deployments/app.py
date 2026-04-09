@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from sklearn.ensemble import GradientBoostingClassifier, BaggingClassifier
 import mlflow.sklearn
 import mlflow.xgboost
-import mlflow.catboost
+import mlflow.catboost 
 import xgboost as xgb
 import catboost as cb
 from lightgbm import LGBMClassifier
